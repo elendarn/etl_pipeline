@@ -1,0 +1,39 @@
+version: '3'
+services:
+
+  mongodb:
+    image: mongo
+    container_name: mongodb
+    ports:
+    - 27017:27017
+
+  tweet_collector:
+    build: tweet_collector/
+    container_name: twt_con
+    volumes:
+    - ./tweet_collector/:/app
+    depends_on:
+    - mongodb
+    env_file:
+    - ./tweet_collector/.env
+
+  etl_job:
+    build: etl_job/
+    container_name: etl_box
+    volumes:
+    - ./etl_job/:/etl
+    
+  postgresdb:
+    image: postgres
+    container_name: post_box  
+    ports:
+    - 5555:5432
+    env_file:
+    - ./etl_job/.env 
+    
+  #metabase:
+ #   image: metabase/metabase
+ #   ports:
+ #   - 3000:3000
+ #   depends_on:
+  #  - postgresdb
